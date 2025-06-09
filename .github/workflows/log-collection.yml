@@ -1,0 +1,34 @@
+name: Log Collection Automation
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  
+  push:
+    branches:
+      - main
+
+jobs:
+  collect-logs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Simulate log file
+        run: |
+          echo "Failed password for user test from 192.168.1.1" > test_auth.log
+
+      - name: Run log collector
+        run: |
+          python log_collector.py
+
+      - name: Upload logs as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-logs
+          path: security_logs.csv
